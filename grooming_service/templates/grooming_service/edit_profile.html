@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-xl px-4 mt-4">
+    <a href="{% url 'profile' %}"><i class="fa-solid fa-caret-left"></i>Back to Profile</a>
+    <!-- Display form submission messages -->
+    {% if messages %}
+        {% for message in messages %}
+             {% if 'edit_profile_form' in message.tags %}
+            <div class=" mt-2 {{ message.tags }}">
+                <a class="close" data-dismiss="alert">×</a>
+                {{ message|safe }}
+            </div>
+             {% endif %}
+        {% endfor %}
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-xl-4">
+                <!-- Profile picture card-->
+                <div class="card mb-4 mb-xl-0">
+                    <div class="card-header custom-bg-primary">Profile Picture</div>
+                    <div class="card-body text-center">
+                        <!-- Profile picture image-->
+                        <img class="img-account-profile mb-2 img-account-profile" src="{{ user.image.url }}" alt="">
+                        <!-- Profile picture upload button-->
+                        <div>
+                            {{ form.image }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <!-- Account details card-->
+                <div class="card mb-4">
+                    <div class="card-header custom-bg-primary">Account Details</div>
+                    <div class="card-body">
+                        <!-- Form Row-->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (First Name)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputFirstName">First name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <!-- Form Group (Last Name)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputLastName">Last name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <!-- Form Row -->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (Address)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputOrgName">Address</label>
+                                {{ form.address }}
+                            </div>
+                            <!-- Form Group (Phone Number)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputLocation">Phone Number</label>
+                                {{ form.phone_number }}
+                            </div>
+                        </div>
+                        <!-- Form Group (Email Address)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputEmailAddress">Email address</label>
+                            {{ form.email }}
+                        </div>
+                        <!-- Form Group (Password)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputPassword">Password</label>
+                            {{ form.password }}
+                        </div>
+                        <!-- Save changes button-->
+                        <button class="btn custom-btn-alt" type="submit">Save changes</button>
+                        <!-- Delete Profile Button -->
+                        <button class="btn custom-btn-del" type="button" id="deleteUserBtn">Delete Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- Confirmation Modal For Deleting Pet -->
+<div class="modal fade" id="confirmDeleteProfileModal" tabindex="-1"
+    aria-labelledby="confirmDeleteProfileModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Display form submission messages -->
+            <div id="deleteUserFormMessages">
+                {% if messages %}
+                    {% for message in messages %}
+                         {% if 'delete_user_form' in message.tags %}
+                        <div class=" mt-2 {{ message.tags }}">
+                            <a class="close" data-dismiss="alert">×</a>
+                            {{ message|safe }}
+                        </div>
+                         {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="modal-body container">
+                <p>Are you sure you want to delete your profile?</p>
+                <p><i>This action cannot be reversed and all content will be lost</i></p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteUserForm" method="post" action="{% url 'delete_user' delete_user_id=0 %}">
+                    {% csrf_token %}
+                    <input type="hidden" class="hidden_input" name="user_id" id="{{ user.id }}" value="">
+                    <button type="button" class="btn btn-danger d-block w-200 d-sm-inline-block" id="confirmDeleteUserButton">Yes</button>
+                    <button type="button" class="btn d-block w-200 d-sm-inline-block btn-light" data-bs-dismiss="modal">No</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+    <script type="module" src="{% static 'js/edit_profile.js' %}"></script>
+    <script type="module" src="{% static 'js/shared.js' %}"></script>
+{% endblock %}

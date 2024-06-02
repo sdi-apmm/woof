@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Services Section -->
+<section class="services-section py-5 custom-bg-secondary">
+    <div class="container">
+        <!-- Section Title -->
+        <h2 class="section-title text-center mb-4">Our Grooming Services</h2>
+        <div class="row">
+            <!-- Loop through each service and create a service card -->
+            {% for service in services %}
+            <div class="col-lg-3 col-md-6 services-card">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <!-- Service Image -->
+                        <img src="{{ service.image.url }}" alt="Related services images" class="services-card-img">
+                        <!-- Service Name -->
+                        <h5 class="card-title">{{ service.name }}</h5>
+                        <!-- Service Description -->
+                        <p class="card-text">{{ service.description|safe }}</p>
+                        <!-- Service Pricing -->
+                        <p class="card-text card-pricing"><strong>Price: £{{ service.vary_price1 }} - £{{ service.vary_price2 }}</strong></p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<!-- Pricing Information Section -->
+<section class="pricing-section py-5 custom-bg-primary">
+    <div class="container">
+        <!-- Section Title -->
+        <h2 class="section-title text-center mb-4">About Our Prices</h2>
+        <!-- Pricing Information -->
+        <p class="text-center">Due to the nature of dogs being different sizes and in different conditions,
+            we evaluate the price of each service at the front desk.
+            This ensures that you only pay for the services your pet needs and that they receive the best care possible.
+            If you have any questions or would like to receive a free quote,
+            please <strong><a href="{% url 'home' %}#contact-section">contact us</a></strong>.
+        </p>
+    </div>
+</section>
+<!-- Image Carousel Section -->
+<section class="carousel-section custom-bg-secondary">
+    <div class="container">
+        <!-- Section Title -->
+        <h2 class="text-center mb-4 pt-4">Gallery</h2>
+        <!-- Bootstrap Carousel -->
+        <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+            <!-- Carousel Indicators -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="4" aria-label="Slide 5"></button>
+                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="5" aria-label="Slide 6"></button>
+            </div>
+            <!-- Carousel Inner -->
+            <div class="carousel-inner">
+                <!-- First Carousel Item -->
+                <div class="carousel-item active" data-bs-interval="10000">
+                    <div class="carousel-item-container d-flex justify-content-center align-items-center">
+                        <img src="{% static 'images/carousel1.webp' %}" class="d-block img-fluid carousel-img" alt="Dog in Grooming Salon">
+                        <div class="carousel-caption d-none d-md-block text-center">
+                            <p>The handsome Storm in for his first Full Groom Package.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Additional Carousel Items -->
+                <div class="carousel-item" data-bs-interval="2000">
+                    <div class="carousel-item-container d-flex justify-content-center align-items-center">
+                        <img src="{% static 'images/carousel2.webp' %}" class="d-block img-fluid carousel-img" alt="Dog in Grooming Salon">
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-item-container d-flex justify-content-center align-items-center">
+                        <img src="{% static 'images/carousel3.webp' %}" class="d-block img-fluid carousel-img" alt="Dog in Grooming Salon">
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-item-container d-flex justify-content-center align-items-center">
+                        <img src="{% static 'images/carousel4.webp' %}" class="d-block img-fluid carousel-img" alt="Dog being bathed">
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-item-container d-flex justify-content-center align-items-center">
+                        <img src="{% static 'images/carousel5.webp' %}" class="d-block img-fluid carousel-img" alt="Dog getting a haircut">
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-item-container d-flex justify-content-center align-items-center">
+                        <img src="{% static 'images/carousel6.webp' %}" class="d-block img-fluid carousel-img" alt="Dog playing in the park">
+                    </div>
+                </div>
+            </div>
+            <!-- Carousel Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</section>
+{% endblock %}

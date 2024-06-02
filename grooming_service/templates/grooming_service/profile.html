@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+{% if user.is_authenticated %}
+<!-- Section for displaying user information and navigation tabs -->
+<section class="h-100">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center">
+            <!-- Main content area -->
+            <div class="col-lg-10 col-xl-10 p-0 profile-content">
+                <div class="card">
+                    <!-- User profile header -->
+                    <div class="rounded-top text-white d-flex flex-row custom-bg-primary profile-header">
+                        <div class="ms-4 mt-3 d-flex flex-column ">
+                            <!-- User profile image and edit button -->
+                            <img src="{{ user.image.url }}" alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2 user-profile-img">
+                        </div>
+                        <!-- User profile displayed information -->
+                        <div class="ms-3 mt-5 profile-info text-dark">
+                            <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                            <p class="mb-1"><i class="fa-solid fa-location-dot"></i> {{ user.address }}</p>
+                            <p class="mb-1"><i class="fa-solid fa-phone"></i> {{ user.phone_number }}</p>
+                        </div>
+                    </div>
+                    <!-- Profile edit button -->
+                    <div class="text-white d-flex flex-row profile-edit-container">
+                        <div class="ms-4 mt-4 d-flex flex-column profile-edit-inner">
+                            <a class="btn mt-5 custom-btn-alt text-white profile-edit-btn" href="{% url 'edit_profile' %}">
+                            Edit profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-5 text-black mt-5 rounded-top profile-card-body">
+                    <div class="col-lg-12 col-xl-12 d-flex justify-content-center align-items-center p-0">
+                        <ul class="nav nav-pills text-center " id="v-tabs-tab" role="tablist">
+                            <!-- Tabs for Pets and Appointments -->
+                            <li class="nav-link active " id="v-tabs-pet-tab" data-bs-toggle="tab" href="#v-tabs-pet" role="tab" aria-controls="v-tabs-pet" aria-selected="true">Pets</li>
+                            <li class="nav-link" id="v-tabs-appointment-tab" data-bs-toggle="tab" href="#v-tabs-appointment" role="tab" aria-controls="v-tabs-appointment" aria-selected="false">Appointments</li>
+                        </ul>
+                    </div>
+                    <div class="tab-content" id="v-tabs-tabContent">
+                        <div class="tab-pane fade show active" id="v-tabs-pet" role="tabpanel" aria-labelledby="v-tabs-pet-tab">
+                            <div class="d-flex justify-content-center mt-3">
+                                <button type="button" class="btn custom-btn-alt add-pet-btn" id="addPetButton">Add pet</button>
+                            </div>
+                            <div class="container overflow-none">
+                                <!-- Loop through pets and display them -->
+                                <div class="row mt-5">
+                                    {% if pets %}
+                                        {% for pet in pets %}
+                                            <div class="col-md-4 my-3">
+                                            <div class="card profile-card">
+                                                <div class="background-block">
+                                                    <img src="{% static 'images/card-background.webp' %}"
+                                                        alt="profile-sample1" class="background"/>
+                                                </div>
+                                                <div class="profile-thumb-block">
+                                                    <img src="{{ pet.image.url }}" alt="Pet Profile Image" class="pet-profile"/>
+                                                </div>
+                                                <div class="card-content">
+                                                   <div class="col-12">
+                                                        <div class="d-flex align-items-center justify-content-center">
+                                                            <h2>{{ pet.name }}</h2>
+                                                            {% if pet.medical_notes|default_if_none:''|length > 0 %}
+                                                                <i class="fa-solid fa-info text-white info-icon ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ pet.medical_notes }}"></i>
+                                                            {% endif %}
+                                                        </div>
+                                                        <p class="h2-small-text">{{ pet.breed }}</p>
+                                                   </div>
+                                                    <div class="button-block">
+                                                        <button class="btn d-block w-100 d-sm-inline-block editPetBtn" id="{{ pet.id }}">Edit</button>
+                                                        <button class="btn d-block w-100 d-sm-inline-block deletePetBtn" id="{{ pet.id }}">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                     <div class="d-flex justify-content-center">
+                                        <p>You have no registered pets</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <!--- Appointment Tab --->
+                        <div class="tab-pane fade show" id="v-tabs-appointment" role="tabpanel" aria-labelledby="v-tabs-appointment-tab">
+                        <div class="d-flex justify-content-center mt-3">
+                                <a class="btn custom-btn-alt add-pet-btn" href="{% url 'appointment' %}">Book an Appointment</a>
+                            </div>
+                            <div class="container overflow-none">
+                                <!-- Loop through pets and display them -->
+                                <div class="row mt-5">
+                                    {% if appointments %}
+                                    {% for appointment in appointments %}
+                                    <div class="col-md-4 my-3">
+                                        <div class="card profile-card">
+                                            <div class="background-block">
+                                                <img src="{% static 'images/card-background.webp' %}"
+                                                    alt="profile-sample1" class="background" />
+                                            </div>
+                                            <div class="profile-thumb-block">
+                                                <img src="{{ appointment.service.image.url }}" alt="profile-image" class="pet-profile"/>
+                                            </div>
+                                            <div class="card-content">
+                                                <div class="col-12">
+                                                     <div class="d-flex text-align-center justify-content-center">
+                                                         <h2 class="fs-6"> {{ appointment.service}}
+                                                             <small class="h2-small-text">{{ appointment.pet.name }}
+                                                              {% if appointment.description|default_if_none:''|length > 0 %}
+                                                                  <i class="fa-solid fa-info text-white info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ appointment.description }}"></i>
+                                                              {% endif %}
+                                                             </small>
+                                                             <small class="h2-small-text">{{ appointment.start_date_time }}</small>
+                                                         </h2>
+                                                     </div>
+                                                </div>
+                                                <div class="button-block">
+                                                    <!-- Check if appointment can be edited -->
+                                                    {% if appointment.start_date_time >= now|add_hours:48 %}
+                                                    <button class="btn d-block w-100 d-sm-inline-block editBtn" id="{{ appointment.id }}">Edit</button>
+                                                    <button class="btn btn-sm d-block w-100 d-sm-inline-block cancelBtn" id="{{ appointment.id }}">Cancel</button>
+                                                    {% else %}
+                                                    <p>Past appointments or appointments that are within 48 hours cannot be edited</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    {% else %}
+                                    <!-- Display message if no appointments exist -->
+                                    <div class="d-flex justify-content-center">
+                                        <p>You have no scheduled appointments</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Confirmation Modal For Cancelling Appointment -->
+<div class="modal fade" id="confirmCancelAppointmentModal" tabindex="-1"
+    aria-labelledby="cancelAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body container">
+                <p>Are you sure you want to cancel this appointment?</p>
+                <p><i>This action cannot be reversed</i></p>
+            </div>
+            <div class="modal-footer">
+                <form id="cancelAppointmentForm" method="post" action="{% url 'cancel_appointment' cancel_appointment_id=0 %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="cancel_appointment_id" id="cancel_appointment_id" value="">
+                    <button type="button" class="btn btn-danger d-block w-200 d-sm-inline-block" id="confirmCancelButton">Yes</button>
+                    <button type="button" class="btn d-block w-200 d-sm-inline-block btn-light" data-bs-dismiss="modal">No</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit Appointment Modal -->
+<div class="modal fade" id="editAppointmentModal" tabindex="-1"
+    aria-labelledby="editAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editAppointmentModalLabel">Edit Appointment</h5>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Display form submission messages -->
+             <div id="editAppointmentFormErrors">
+              {% if messages %}
+                    {% for message in messages %}
+                        {% if 'edit_appointment_form' in message.tags %}
+                            <div class="mt-2 {{ message.tags }}">
+                                <a class="close" data-dismiss="alert">×</a>
+                                {{ message|safe }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+              {% endif %}
+             </div>
+            <div class="modal-body container">
+                <form method="POST" class="model-form" id="editAppointmentForm">
+                    {% csrf_token %}
+                    {{ appointmentForm.media }}
+                    <input type="hidden" name="form_type" value="edit_appointment_form">
+                    <div class="row mb-3">
+                        <label for="id_start_date" class="col-sm-2 col-form-label">Start date:</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                <a href="#" id="start-date-icon">
+                                <i class="fas fa-calendar"></i>
+                                </a>
+                                </span>
+                                <input type="text" id="start_date" class="form-control" name="start_date_time">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_pet" class="col-sm-2 col-form-label">Pet:</label>
+                        <div class="col-sm-10">
+                            {{ appointmentForm.pet }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_service" class="col-sm-2 col-form-label">Service:</label>
+                        <div class="col-sm-10">
+                            {{ appointmentForm.service }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_service" class="col-sm-2 col-form-label">Medical Notes:</label>
+                        <div class="col-sm-10">
+                            {{ appointmentForm.description }}
+                        </div>
+                    </div>
+                    <input type="hidden" id="appointment_id" name="appointment_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveChangesButton">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Pet Modal -->
+<div class="modal fade" id="addPetModal" tabindex="-1" aria-labelledby="addPetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPetModalLabel">Add Pet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Display form submission messages -->
+            <div id="petFormErrors">
+                 {% if messages %}
+                    {% for message in messages %}
+                        {% if 'add_pet_form' in message.tags %}
+                            <div class="mt-2 {{ message.tags }}">
+                                <a class="close" data-dismiss="alert">×</a>
+                                {{ message|safe }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                 {% endif %}
+            </div>
+            <div class="modal-body container">
+                <form method="POST" class="model-form" id="addPetForm">
+                    {% csrf_token %}
+                    {{ petForm.media }}
+                    <input type="hidden" name="form_type" value="pet_form">
+                    <div class="row mb-3">
+                        <label for="id_image" class="col-sm-2 col-form-label">Image:</label>
+                        <div class="col-sm-10">
+                            {{ petForm.image }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_name" class="col-sm-2 col-form-label">Name:</label>
+                        <div class="col-sm-10">
+                            {{ petForm.name }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_breed" class="col-sm-2 col-form-label">Breed:</label>
+                        <div class="col-sm-10">
+                            {{ petForm.breed }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_age" class="col-sm-2 col-form-label">Age:</label>
+                        <div class="col-sm-10">
+                            {{ petForm.age }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_medical_notes" class="col-sm-2 col-form-label">Medical notes:</label>
+                        <div class="col-sm-10">
+                            {{ petForm.medical_notes }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addPetSubmitButton">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit Pet Modal -->
+<div class="modal fade" id="editPetModal" tabindex="-1"
+    aria-labelledby="editPetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editPetModalLabel">Edit Pet</h5>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+             <!-- Display form submission messages -->
+             <div id="editPetFormErrors">
+                  {% if messages %}
+                        {% for message in messages %}
+                            {% if 'edit_pet_form' in message.tags %}
+                                <div class="mt-2 {{ message.tags }}">
+                                    <a class="close" data-dismiss="alert">×</a>
+                                    {{ message|safe }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                  {% endif %}
+             </div>
+            <div class="modal-body container">
+                <form method="POST" class="model-form" id="editPetForm">
+                    {% csrf_token %}
+                    {{ petForm.media }}
+                    <div class="row mb-3">
+                        <label for="id_image" class="col-sm-2 col-form-label">Image:</label>
+                        <div class="col-sm-10">
+                            {{ editPetForm.image }}
+                        </div>
+                    </div>
+                    <input type="hidden" name="form_type" value="edit_pet_form">
+                    <div class="row mb-3">
+                        <label for="id_name" class="col-sm-2 col-form-label">Name:</label>
+                        <div class="col-sm-10">
+                            {{ editPetForm.name }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_breed" class="col-sm-2 col-form-label">Breed:</label>
+                        <div class="col-sm-10">
+                            {{ editPetForm.breed }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_age" class="col-sm-2 col-form-label">Age:</label>
+                        <div class="col-sm-10">
+                            {{ editPetForm.age }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="id_medical_notes" class="col-sm-2 col-form-label">Medical notes:</label>
+                        <div class="col-sm-10">
+                            {{ editPetForm.medical_notes }}
+                        </div>
+                    </div>
+                    <input type="hidden" id="pet_id" name="pet_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="editPetButton"> Save changes </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Confirmation Modal For Deleting Pet -->
+<div class="modal fade" id="confirmDeletePetModal" tabindex="-1"
+    aria-labelledby="confirmDeletePetLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete pet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+             <div id="deletePetFormMessageContainer">
+                {% if messages %}
+                    {% for message in messages %}
+                         {% if 'delete_pet_form' in message.tags %}
+                            <div class=" mt-2 {{ message.tags }}">
+                                <a class="close" data-dismiss="alert">×</a>
+                                {{ message|safe }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+             {% endif %}
+            </div>
+            <div class="modal-body container">
+                <p>Are you sure you want to delete the pet?</p>
+                <p><i>This action cannot be reversed</i></p>
+            </div>
+            <div class="modal-footer">
+                <form id="deletePetForm" method="post" action="{% url 'delete_pet' delete_pet_id=0 %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="pet_id" id="pet_id" value="">
+                    <button type="button" class="btn btn-danger d-block w-200 d-sm-inline-block" id="confirmDeletePetButton">Yes</button>
+                    <button type="button" class="btn d-block w-200 d-sm-inline-block btn-light" data-bs-dismiss="modal">No</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Display message if user is not logged in -->
+<p>You must be logged in</p>
+{% endif %}
+{% endblock %}
+{% block js %}
+    <script type="module" src="{% static 'js/profile.js' %}"></script>
+    <script type="module" src="{% static 'js/shared.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<section class="p-3 p-md-4 p-xl-5">
+    {% if user.is_authenticated %}
+    <div class="container">
+        <!-- Display form submission messages -->
+         {% if messages %}
+            {% for message in messages %}
+                 {% if 'book_appointment_form' in message.tags %}
+                    <div class=" mt-2 {{ message.tags }}">
+                        <a class="close" data-dismiss="alert">×</a>
+                        {{ message|safe }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+         {% endif %}
+        <div class="row align-items-center justify-content-center appointment-img-row">
+            <!-- Image Column -->
+            <div class="col-12 col-md-5 d-none d-md-block appointment-img-col">
+                <!-- On larger screens, display the image column -->
+                <div class="d-flex flex-column justify-content-center h-100">
+                    <img class="img-fluid rounded-start appointment-img" src="{% static 'images/appointment-dog.webp' %}" alt="Dog laying on floor with shades on">
+                </div>
+            </div>
+            <!-- Form Column -->
+            <div class="col-12 col-md-7 d-flex custom-bg-primary rounded-end appointment-form-col">
+                <!-- Form container -->
+                <div class="d-flex flex-column justify-content-between w-100 p-3 p-md-4 appointment-form-container">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <!-- Title and description -->
+                            <h2 class="h3">Book an Appointment</h2>
+                            <h3 class="fs-6 fw-normal text-secondary m-0">Please enter the relevant details to book an appointment</h3>
+                        </div>
+                    </div>
+                    <form method="POST">
+                        <!-- Form fields -->
+                        {{ form.media }}
+                        {% csrf_token %}
+                        <div class="row gy-3 gy-md-4">
+                            <div class="col-12">
+                                <!-- Start Date field -->
+                                <label for="start-date" class="form-label">Start Date: <span class="text-danger">*</span></label>
+                                <div class="input-group flex-nowrap">
+                                    <span class="input-group-text">
+                                    <a href="#" id="start-date-icon"><i class="fas fa-calendar"></i></a>
+                                    </span>
+                                    {{ form.start_date_time }}
+                                </div>
+                            </div>
+                            <!-- Other form fields -->
+                            <div class="col-12">
+                                <div class="row service-appointment-selector">
+                                    <div class="col-4">
+                                        <label for="service" class="form-label">Service: <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 service-price-container">
+                                        <p id="servicePrice" hidden></p>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    {{ form.service }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label for="pet" class="form-label">Pet: <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    {{ form.pet }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label">Additional Information:</label>
+                                <div class="input-group">
+                                    {{ form.description }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <!-- Submit button -->
+                                <div class="d-grid">
+                                    <button class="btn custom-btn" type="submit">Book Appointment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+{% block js %}
+    <script type="module" src="{% static 'js/script.js' %}"></script>
+    <script type="module" src="{% static 'js/shared.js' %}"></script>
+{% endblock %}

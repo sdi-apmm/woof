@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<!-- Login section -->
+<section class="login-section">
+    <!-- Container for the login section with padding and margin -->
+    <div class="container py-3 my-3 h-75">
+         <!-- Display form submission messages -->
+        {% if messages %}
+            {% for message in messages %}
+                 {% if 'login_form' in message.tags %}
+                <div class=" mt-2 {{ message.tags }}">
+                    <a class="close" data-dismiss="alert">×</a>
+                    {{ message|safe }}
+                </div>
+                 {% endif %}
+            {% endfor %}
+        {% endif %}
+        <!-- Row to center the content vertically -->
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <!-- Column for login content with specified widths for different screen sizes -->
+            <div class="login-content col-12 col-md-8 col-lg-6 col-xl-5">
+                <!-- Card for the login form -->
+                <div class="card login-card custom-bg-primary text-black">
+                    <!-- Card body -->
+                    <div class="card-body p-4 text-center">
+                        <div class="mb-md-3 mt-md-3 pb-3">
+                            <!-- Title for the login form -->
+                            <h2 class="fw-bold mb-2 text-uppercase">Sign In</h2>
+                            <!-- Instruction for the users -->
+                            <p class="text-black-50 mb-3">Please enter your email and password!</p>
+                            <!-- Form for the login -->
+                            <form method="post">
+                                <!-- CSRF token for security -->
+                                {% csrf_token %}
+                                <!-- Email input field -->
+                                <div data-mdb-input-init class="form-outline form-white mb-3">
+                                    <input type="email" id="typeEmailX" class="form-control form-control-lg" name="email" />
+                                    <label class="form-label" for="typeEmailX">Email</label>
+                                </div>
+                                <!-- Password input field -->
+                                <div data-mdb-input-init class="form-outline form-white mb-3">
+                                    <input type="password" id="typePasswordX" class="form-control form-control-lg" name="password" />
+                                    <label class="form-label" for="typePasswordX">Password</label>
+                                </div>
+                                <!-- Forgot password link -->
+                                <p class="small mb-3 pb-lg-1"><a class="text-black-50" href="{% url 'not_found' %}">Forgot password?</a></p>
+                                <!-- Submit button for signing in -->
+                                <button data-mdb-button-init data-mdb-ripple-init class="btn custom-btn btn-lg px-4" type="submit">Sign In</button>
+                            </form>
+                        </div>
+                        <div>
+                            <!-- Link to register page for new users -->
+                            <p class="mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-black-50 fw-bold">Register</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+    <script type="module" src="{% static 'js/login.js' %}"></script>
+    <script type="module" src="{% static 'js/shared.js' %}"></script>
+{% endblock %}

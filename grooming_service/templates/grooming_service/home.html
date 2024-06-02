@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Display form messages when user is deleted or logs out-->    
+ <div id="generalMessages">
+        {% if messages %}
+            {% for message in messages %}
+                  <div class=" mt-2 {{ message.tags }}">
+                        <a class="close" data-dismiss="alert">×</a>
+                        {{ message|safe }}
+                  </div>
+        {% endfor %}
+     {% endif %}
+ </div>    
+<!-- Hero Section -->
+<section class="hero-section p-5 d-flex justify-content-center align-items-center text-center bg-image" id="hero-image">
+    <div class="container text-center">
+        <div class="text-white">
+            <h1 class="mb-4">Award Winning Professional Dog Grooming</h1>
+            <p class="lead mb-4">Your furry friend deserves the best grooming care.</p>
+        </div>
+    </div>
+</section>
+<!-- Services Section -->
+<section id="services-section" class="custom-bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Services</h2>
+        <div class="row">
+            <!-- Service Card -->
+            {% for home_service in home_services %}
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <img src="{{ home_service.image.url }}" alt="Bathing" class="service-img img-fluid mx-auto mt-3">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ home_service.name }}</h5>
+                        <p class="card-text">{{ home_service.short_description|safe }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Find Out More Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'services' %}" class="btn custom-btn-alt">Find Out More</a>
+        </div>
+    </div>
+</section>
+<!-- About Section -->
+<section id="about-section" class="custom-bg-primary py-5">
+    <div class="container">
+        <!-- About Title -->
+        <h2 class="text-center mb-4" id="about-heading">About Us</h2>
+        <!-- About Paragraphs -->
+        <p class="lead text-center">At Woof & Wash Grooming, we are passionate about providing top-quality grooming services for your beloved pets.</p>
+        <p class="text-center">Our team of experienced groomers is dedicated to ensuring that your pet receives the care and attention they deserve.</p>
+        <p class="text-center">Founded in 2024, our mission is to make grooming a positive experience for every pet. We use gentle techniques and high-quality products to ensure the best care.</p>
+        <p class="text-center">We offer a wide range of services, including bathing, grooming, nail trimming, and ear cleaning, all tailored to meet the unique needs of your pet.</p>
+        <p class="text-center">Our state-of-the-art facility is designed to provide a safe and comfortable environment, ensuring a stress-free experience for your furry friends.</p>
+        <p class="text-center">We believe in continuous learning and regularly update our skills and knowledge to stay current with the latest grooming trends and techniques.</p>
+        <!-- Learn More Button -->
+        <div class="text-center mt-4">
+            <a href="{% url 'about' %}" class="btn custom-btn">Learn More About Us</a>
+        </div>
+    </div>
+</section>
+<!-- Testimonials Section -->
+<section id="testimonials-section" class="custom-bg-light py-5">
+    <div class="container">
+        <!-- Section Title -->
+        <h2 class="text-center mb-4">Testimonials</h2>
+        <!-- Testimonials Cards -->
+        <div class="row">
+            <!-- Testimonial Card 1 -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <!-- Testimonial Content -->
+                        <p class="card-text">"Amazing grooming salon! My dog always looks and smells fantastic after a visit here."</p>
+                        <!-- Testimonial Author -->
+                        <p class="card-text text-end">- Sarah M.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Testimonial Card 2 -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <!-- Testimonial Content -->
+                        <p class="card-text">"Friendly staff and excellent service. Highly recommend!"</p>
+                        <!-- Testimonial Author -->
+                        <p class="card-text text-end">- John D.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Testimonial Card 3 -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <!-- Testimonial Content -->
+                        <p class="card-text">"I'm so impressed with the grooming services at Woof & Wash Grooming. They always go above and beyond to make sure my dog looks and feels his best. The staff is friendly, knowledgeable, and truly cares about the well-being of the animals. I wouldn't trust anyone else with my pet's grooming needs!"</p>
+                        <!-- Testimonial Author -->
+                        <p class="card-text text-end">- Mike K.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Contact Section -->
+<section id="contact-section" class="custom-bg-primary py-5">
+    <div class="container">
+        <!-- Section Title -->
+        <h2 class="text-center mb-4">Contact Us</h2>
+        <!-- Section Description -->
+        <p class="lead text-center">Ready to schedule an appointment, or want a free quote?
+            Get in touch with us today!
+        </p>
+        <!-- Contact Information -->
+        <div class="text-center">
+            <p><i class="fa-solid fa-phone"></i> Phone: 123-456-7890</p>
+            <p><i class="fa-solid fa-envelope"></i> Email: info@woofwashgrooming.com</p>
+            <!-- Schedule Appointment Button -->
+            <a href="{% url 'appointment' %}" class="btn custom-btn">Schedule Appointment</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+    <script type="module" src="{% static 'js/shared.js' %}"></script>
+{% endblock %}
