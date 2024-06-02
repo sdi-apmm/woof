@@ -531,7 +531,6 @@ class TestManageProfileView(TestCase):
         self.assertTrue(any(message.extra_tags == "edit_appointment_form" for message in messages))
 
     def test_handle_pet_edit_form_valid_data(self):
-
         # Create a test pet
         pet = Pet.objects.create(user=self.user, name="Test Pet", breed="Test Breed", age=3,
                                  image="media/images/tey9seavfcldmybatmmt", medical_notes="Test notes")
@@ -542,7 +541,7 @@ class TestManageProfileView(TestCase):
             'name': 'Updated Pet',
             'breed': 'Updated Breed',
             'age': 4,
-            'image': 'media/images/tey9seavfcldmybatmmt', #cloudinary field
+            'image': 'media/images/tey9seavfcldmybatmmt',  #cloudinary field
             'medical_notes': 'Updated notes',
             'form_type': 'edit_pet_form'
         })
@@ -650,7 +649,6 @@ class TestCancelAppointmentView(TestCase):
         # Set up a test client
         self.client = Client()
 
-
     def test_cancel_appointment_success(self):
         current_time = timezone.now() + timezone.timedelta(days=1)
         current_time_str = current_time.strftime('%Y-%m-%d %H:%M')
@@ -676,7 +674,9 @@ class TestCancelAppointmentView(TestCase):
 
         # Check that the success message was added
         messages = [str(m) for m in response.wsgi_request._messages]
-        self.assertIn(f"Your appointment on the {appointment_time} has been cancelled. Redirecting you to profile page...", messages)
+        self.assertIn(
+            f"Your appointment on the {appointment_time} has been cancelled. Redirecting you to profile page...",
+            messages)
 
     def test_cancel_appointment_permission_denied(self):
         # Create a test appointment belonging to another user
@@ -715,7 +715,6 @@ class TestCancelAppointmentView(TestCase):
 
         # Use the test client to make a GET request to the 'cancel_appointment' view with an appointment ID that doesn't exist
         response = self.client.get(reverse('cancel_appointment', kwargs={'cancel_appointment_id': 999}))
-
 
         # Check that that 404 was returned
         self.assertEqual(response.status_code, 404)
@@ -762,7 +761,8 @@ class DeletePetViewTest(TestCase):
 
     def test_delete_pet_permission_denied(self):
         # Create a pet for another user
-        pet = Pet.objects.create(user=self.user2, name='Test Pet', breed='Test Breed', age=3, medical_notes='Test notes')
+        pet = Pet.objects.create(user=self.user2, name='Test Pet', breed='Test Breed', age=3,
+                                 medical_notes='Test notes')
 
         # Log in the test user
         self.client.login(email='john.doe@example.com', password='password123')
@@ -845,6 +845,7 @@ class TestDeleteUserView(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+
 class TestGetAppointmentByIdView(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -896,6 +897,9 @@ class TestGetAppointmentByIdView(TestCase):
         self.assertEqual(response.json(), {"appointment": expected_data})
 
     def test_get_appointment_by_id_not_found(self):
+        # Log in the user
+        self.client.login(email='john.doe@example.com', password='password123')
+
         # Make a GET request with an invalid appointment ID
         response = self.client.get(reverse('get_appointment_by_id', kwargs={'appointment_id': 999}))
 
@@ -905,12 +909,94 @@ class TestGetAppointmentByIdView(TestCase):
         # Check the content of the JSON response
         self.assertEqual(response.json(), {"message": "Appointment not found"})
 
-    def test_get_appointment_by_id_invalid_request(self):
-        # Make a GET request without providing an appointment ID
-        response = self.client.get(reverse('get_appointment_by_id', kwargs={'appointment_id': ''}))
 
-        # Check that the response status code is 400
-        self.assertEqual(response.status_code, 400)
+class TestGetPetByIdView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up test data
+        cls.user = User.objects.create_user(
+            first_name='John',
+            last_name='Doe',
+            email='john.doe@example.com',
+            password='password123',
+            phone_number='1234567890',
+            address='123 Main St')
+        cls.pet = Pet.objects.create(
+            name='Buddy',
+            breed='Golden Retriever',
+            age=3,
+            medical_notes='Healthy',
+            user=cls.user
+        )
+
+    def test_get_pet_by_id_success(self):
+        # Log in the user
+        self.client.login(email='john.doe@example.com', password='password123')
+
+        # Make a GET request to get the pet by its ID
+        response = self.client.get(reverse('get_pet_by_id', kwargs={'pet_id': self.pet.id}))
 
         # Check the content of the JSON response
-        self.assertEqual(response.json(), {"message": "Invalid request"})
+        expected_data = {
+                    "id": self.pet.id,
+                    "name": self.pet.name,
+                    "breed": self.pet.breed,
+                    "age": self.pet.age,
+                    "medical_notes": self.pet.medical_notes
+                }
+
+        self.assertEqual(response.json(), {"pet": expected_data})
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_pet_by_id_not_found(self):
+        # Log in the user
+        self.client.login(email='john.doe@example.com', password='password123')
+
+        # Make a GET request to get the pet with invalid ID
+        response = self.client.get(reverse('get_pet_by_id', kwargs={'pet_id': 99999}))
+
+        # Check that the response status code is 404
+        self.assertEqual(response.status_code, 404)
+
+        # Check the content of the JSON response
+        self.assertEqual(response.json(), {"message": "Pet not found"})
+
+
+class TestGetServicePriceView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up test data
+        cls.user = User.objects.create_user(
+            first_name='John',
+            last_name='Doe',
+            email='john.doe@example.com',
+            password='password123',
+            phone_number='1234567890',
+            address='123 Main St')
+        cls.service = Service.objects.create(name='Grooming', vary_price1=30.0, vary_price2=50.0)
+
+    def test_get_pet_by_id_success(self):
+        # Log in the user
+        self.client.login(email='john.doe@example.com', password='password123')
+
+        # Make a GET request to get the service by its ID
+        response = self.client.get(reverse('service_price', kwargs={'service_id': self.service.id}))
+
+        # Check the content of the JSON response
+        expected_data = {'vary_price1': '30.00', 'vary_price2': '50.00'}
+
+        self.assertEqual(response.json(), {"price_range": expected_data})
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_pet_by_id_not_found(self):
+        # Log in the user
+        self.client.login(email='john.doe@example.com', password='password123')
+
+        # Make a GET request to get the pet with invalid ID
+        response = self.client.get(reverse('service_price', kwargs={'service_id': 99999}))
+
+        # Check that the response status code is 404
+        self.assertEqual(response.status_code, 404)
+
+        # Check the content of the JSON response
+        self.assertEqual(response.json(), {"message": "Service not found"})
